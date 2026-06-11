@@ -1,3 +1,8 @@
+# Streamlit 버전(app.py) 실행용
 streamlit>=1.32
 pandas>=2.0
 openpyxl>=3.1
+
+# tkinter 버전(main_ui.py)은 별도 설치 불필요 (파이썬 표준 라이브러리)
+#   단, 엑셀 내보내기를 쓰려면 pandas, openpyxl 만 있으면 됨 (위에 포함)
+# exe 패키징 시:  py -m pip install pyinstaller
