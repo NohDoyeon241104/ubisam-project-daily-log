@@ -3,6 +3,37 @@
 협력업체 투입 프로젝트의 매일 진행 상황을 표준 양식으로 기록 → 대시보드 → 엑셀로 내보내는 한 묶음.
 "주 3회 이상 쓰는 업무를 지식자산화한다"의 실제 예시.
 
+## 빠른 시작 (처음 받는 사람)
+
+1. Clone
+```bash
+git clone https://github.com/NohDoyeon241104/ubisam-project-daily-log.git
+cd ubisam-project-daily-log
+```
+2. 사용 안내 먼저 열기
+
+일일기록_사용안내.html 을 브라우저로 열어 입력/출력 예시를 확인한다 (4단계 흐름).
+
+3. 둘 중 하나로 사용
+
+
+Claude / Claude Code — 그날 한 작업을 적고 "일일 기록 정리해줘" 요청 → output/[프로젝트]/[날짜].md 저장
+Streamlit 앱 — 아래 실행
+
+
+```bash
+cd scripts
+pip install -r requirements.txt
+streamlit run app.py
+```
+4. 본인 정보로 한 줄 수정
+
+CLAUDE.md 의 팀·이름·담당 부분을 본인 것으로 바꾼다. (공유받은 그대로 두면 안 됨)
+
+
+clone 하면 공통 기능은 함께 받지만, 내가 생성한 일일 기록(output/)과 업로드물(uploads/)은
+.gitignore 로 제외되어 내 로컬에만 쌓인다. 남의 기록이 섞이지 않는다.
+
 ## 먼저 볼 것
 - `일일기록_사용안내.html` — 브라우저로 열면 4단계 입력/출력 예시를 시각적으로 확인 (처음 쓰는 사람용)
 
