@@ -194,6 +194,17 @@ with tab_input:
                 cfg["log_root"], proj["id"], the_date.isoformat(),
                 author, daily_status, work_text or "(작업 내용 없음)",
             )
+
+            # 입력 원본을 uploads 에 저장 (git 제외, 로컬 추적용)
+            # 같은 날 여러 번 생성해도 안 덮어쓰도록 시각(HHMMSS)까지 붙임
+            if work_text.strip():
+                UPLOADS_DIR.mkdir(exist_ok=True)
+                ts = datetime.now().strftime("%H%M%S")
+                input_name = f"{proj['id']}_{the_date.isoformat()}_{ts}_input.txt"
+                input_path = UPLOADS_DIR / input_name
+                input_path.write_text(work_text.strip(), encoding="utf-8")
+                st.caption(f"입력 원본 저장됨: uploads/{input_name}")
+
             st.text_area("생성된 프롬프트 (Claude에 붙여넣기)", value=prompt, height=220)
             st.caption("위 내용을 복사해 Claude(또는 Claude Code)에 붙여넣으면 "
                        "체크리스트 .md 가 지정 경로에 저장됩니다.")
