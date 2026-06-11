@@ -1,0 +1,23 @@
+# 생성물 / 업로드물은 공유 대상 아님 (clone 시 폴더만 받고 내용은 각자 로컬)
+output/*
+uploads/*
+
+# 단, 폴더 구조는 유지
+!output/.gitkeep
+!uploads/.gitkeep
+!output/_templates/
+output/_templates/*
+!output/_templates/daily_log_template.md
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 엑셀 내보내기 결과
+*.xlsx
+
+# OS
+.DS_Store
+Thumbs.db

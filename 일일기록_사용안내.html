@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UBISAM 프로젝트 일일 기록 안내</title>
+<style>
+  :root{
+    --ink:#1a2230; --sub:#5b6573; --line:#e3e7ee; --bg:#f5f7fa;
+    --panel:#ffffff; --brand:#4F81BD; --brand-deep:#1F497D;
+    --s1:#5B8DEF; --s2:#2EA67A; --s3:#7A5CC4; --s4:#E08A2B;
+    /* 상태색 (앱과 동일) */
+    --st-plan:#EF9F27; --st-run:#639922; --st-done:#888780;
+    --st-ok:#2EA67A; --st-delay:#E08A2B; --st-issue:#D1495B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"맑은 고딕","Malgun Gothic",-apple-system,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+  header{
+    background:linear-gradient(135deg,var(--brand) 0%,var(--brand-deep) 100%);
+    color:#fff;padding:44px 0 38px;position:relative;overflow:hidden;
+  }
+  header::after{
+    content:"UbiSam";position:absolute;right:-10px;bottom:-26px;
+    font-size:120px;font-weight:800;color:rgba(255,255,255,.08);
+    letter-spacing:-4px;pointer-events:none;
+  }
+  .eyebrow{font-size:13px;letter-spacing:3px;opacity:.85;font-weight:600}
+  header h1{font-size:30px;font-weight:800;margin:6px 0 8px;letter-spacing:-.5px}
+  header p{font-size:15px;opacity:.92;max-width:680px}
+
+  main{padding:34px 0 60px}
+  .layout{display:grid;grid-template-columns:340px 1fr;gap:26px;align-items:start}
+
+  /* 좌: 4단계 흐름 */
+  .steps{display:flex;flex-direction:column;gap:10px}
+  .step-card{
+    background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--c);
+    border-radius:10px;padding:13px 15px;cursor:pointer;transition:.16s;
+    display:flex;align-items:flex-start;gap:12px;
+  }
+  .step-card:hover{transform:translateX(3px);box-shadow:0 4px 14px rgba(30,73,125,.09)}
+  .step-card.active{background:var(--c);border-color:var(--c);color:#fff}
+  .step-card.active .sc-sub{color:rgba(255,255,255,.85)}
+  .sc-no{font-size:18px;font-weight:800;min-width:30px;color:var(--c)}
+  .step-card.active .sc-no{color:#fff}
+  .sc-title{font-size:15px;font-weight:700;line-height:1.3}
+  .sc-sub{font-size:12.5px;color:var(--sub);margin-top:2px}
+
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    overflow:hidden;box-shadow:0 2px 16px rgba(20,34,55,.05)}
+  .panel-head{padding:20px 24px;border-bottom:1px solid var(--line);
+    border-top:5px solid var(--c)}
+  .panel-head .ph-no{font-size:13px;font-weight:700;color:var(--c);letter-spacing:1px}
+  .panel-head h2{font-size:21px;font-weight:800;margin:2px 0 8px}
+  .panel-head .when{font-size:13px;color:var(--sub)}
+
+  .body{padding:18px 24px 26px}
+  .lbl{font-size:12px;font-weight:700;color:var(--sub);letter-spacing:1px;margin:16px 0 6px}
+  .lbl:first-child{margin-top:4px}
+
+  .doc{background:#fcfcfd;border:1px solid var(--line);border-radius:10px;
+    padding:18px 20px;font-size:13.5px;}
+  .doc h1{font-size:16px;font-weight:800;margin-bottom:10px;color:var(--brand-deep)}
+  .doc h3{font-size:14px;font-weight:700;margin:14px 0 5px;color:var(--c)}
+  .doc ul{margin:0 0 4px;padding-left:18px}
+  .doc li{margin:2px 0}
+  .doc .note{color:#b15;font-weight:600}
+
+  /* 자유 입력 박스 (사용자가 막 적는 것) */
+  .freebox{background:#fff7ed;border:1px solid #f3d9b8;border-radius:10px;
+    padding:14px 16px;font-size:13.5px;color:#7a4a12;line-height:1.7}
+
+  /* YAML 머리말 */
+  .yaml{background:#1e2530;border-radius:8px;padding:13px 16px;
+    font-family:"D2Coding",Consolas,monospace;font-size:12.5px;color:#cdd6e3;
+    line-height:1.7;white-space:pre;overflow-x:auto;margin:4px 0}
+  .yaml .k{color:#8bb4f0}.yaml .v{color:#a8d88a}
+
+  /* 화살표 흐름 */
+  .flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 2px}
+  .flow .box{flex:1;min-width:120px;background:#f0f3f8;border:1px solid var(--line);
+    border-radius:8px;padding:10px 12px;text-align:center;font-size:12.5px;font-weight:600;color:var(--brand-deep)}
+  .flow .arr{color:var(--sub);font-weight:800;font-size:16px}
+
+  /* 상태 배지 */
+  .badges{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0}
+  .badge{font-size:12px;padding:3px 11px;border-radius:20px;color:#fff;font-weight:600}
+
+  /* 경로 표시 */
+  .path{font-family:Consolas,monospace;font-size:12.5px;background:#eef2f8;
+    padding:2px 8px;border-radius:5px;color:var(--brand-deep)}
+
+  table{border-collapse:collapse;width:100%;margin:6px 0;font-size:12.5px}
+  th,td{border:1px solid var(--line);padding:6px 10px;text-align:left}
+  th{background:#f0f3f8;font-weight:700}
+
+  .howto{margin-top:30px;background:#fff;border:1px solid var(--line);
+    border-radius:14px;padding:22px 26px}
+  .howto h3{font-size:16px;font-weight:800;margin-bottom:10px;color:var(--brand-deep)}
+  .howto ol{padding-left:20px}.howto li{margin:6px 0;font-size:14px}
+  .howto code{background:#eef2f8;padding:1px 6px;border-radius:5px;font-size:12.5px;color:var(--brand-deep)}
+  .gitnote{margin-top:14px;padding:12px 14px;background:#eef7f1;border:1px solid #cfe8da;
+    border-radius:8px;font-size:13px;color:#1d6b48}
+
+  @media(max-width:820px){
+    .layout{grid-template-columns:1fr}
+    .steps{flex-direction:row;overflow-x:auto;padding-bottom:6px}
+    .step-card{min-width:210px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="eyebrow">UBISAM · 프로젝트 일일 기록 SKILL</div>
+    <h1>프로젝트 일일 기록 안내</h1>
+    <p>매일의 작업을 자유롭게 적으면 AI가 표준 체크리스트로 정리해 저장합니다.
+       아래 4단계를 눌러 입력 예시와 출력 양식이 어떤 모습인지 확인하세요.
+       처음 쓰는 분도 이 순서만 따르면 됩니다.</p>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+  <div class="layout">
+    <div class="steps" id="stepList"></div>
+    <div class="panel" id="panel"></div>
+  </div>
+
+  <div class="howto">
+    <h3>세 가지 사용 경로</h3>
+    <ol>
+      <li><b>웹(가장 쉬움)</b> — claude.ai 에서 그날 한 작업을 적고 "일일 기록 정리해줘" 요청</li>
+      <li><b>Claude Code</b> — 레포 폴더에서 <code>claude</code> 실행 → "오늘 작업 일일 기록으로 정리해줘"</li>
+      <li><b>UI 앱</b> — <code>streamlit run scripts/app.py</code> → 프로젝트·날짜 선택 + 작업 내용 입력 → 프롬프트 자동 생성 → 복사해서 Claude 에 붙여넣기</li>
+    </ol>
+    <div class="gitnote">
+      <b>Git 공유 규칙</b> — clone 하면 공통 기능(SKILL·워크플로우·앱)은 함께 받지만,
+      <span class="path">output/</span> 의 생성된 일일 기록과 <span class="path">uploads/</span> 의 업로드 파일은
+      <span class="path">.gitignore</span> 로 제외되어 올라가지 않습니다. 각자 로컬에만 쌓입니다.
+    </div>
+  </div>
+</div>
+</main>
+
+<script>
+const STEPS = [
+  {no:"01",key:"s1",name:"프로젝트 선택",use:"projects.json 에서 불러오기",
+   render:`
+    <div class="lbl">프로젝트는 어디서 오나</div>
+    <p style="font-size:13.5px"><span class="path">projects.json</span> 에 등록된 목록에서 고릅니다. 없으면 설정에서 추가(CRUD)합니다. 프로젝트 전체 상태는 세 가지이며 콤보박스 색이 달라집니다.</p>
+    <div class="badges">
+      <span class="badge" style="background:var(--st-plan)">예정</span>
+      <span class="badge" style="background:var(--st-run)">진행중</span>
+      <span class="badge" style="background:var(--st-done)">완료</span>
+    </div>
+    <div class="lbl">프로젝트 설정 항목</div>
+    <table>
+      <tr><th>항목</th><th>설명</th></tr>
+      <tr><td>프로젝트명</td><td>입력 시 폴더 ID 자동 생성 (공백 → _)</td></tr>
+      <tr><td>기간</td><td>시작일 ~ 종료일 (종료일 미정 가능)</td></tr>
+      <tr><td>상태</td><td>예정 / 진행중 / 완료</td></tr>
+      <tr><td>담당자</td><td>쉼표로 구분, 기본 작성자로 채워짐</td></tr>
+    </table>`},
+
+  {no:"02",key:"s2",name:"작업 내용 입력",use:"자유롭게 막 적기",
+   render:`
+    <div class="lbl">이렇게 막 적으면 됩니다 (형식 신경 안 써도 됨)</div>
+    <div class="freebox">오전에 SeqAutoRunPTOP X=600 스톨 재현 테스트함. iMOTFComplete 리셋이 안되는 것 같음. ScannerConfig 파라미터 연결 부분 내일 필드에서 확인 예정. MarkingStartX 값 매핑 검토함.</div>
+    <div class="lbl">그날 하루 상태 (프로젝트 상태와 다름)</div>
+    <div class="badges">
+      <span class="badge" style="background:var(--st-ok)">정상</span>
+      <span class="badge" style="background:var(--st-delay)">지연</span>
+      <span class="badge" style="background:var(--st-issue)">이슈</span>
+    </div>
+    <p style="font-size:12.5px;color:var(--sub);margin-top:8px">날짜는 기본값이 오늘입니다. 담당자·협업자는 <span class="path">, </span> 로 구분해 자유롭게 적습니다. 파일 업로드로도 입력할 수 있습니다.</p>`},
+
+  {no:"03",key:"s3",name:"AI가 정리",use:"체크리스트 양식으로 변환",
+   render:`
+    <div class="lbl">AI가 위 메모를 이 양식으로 정리합니다</div>
+    <div class="yaml"><span class="k">project</span>: <span class="v">LGES_OC5_PtoP</span>
+<span class="k">date</span>: <span class="v">2026-06-11</span>
+<span class="k">author</span>: <span class="v">노도연, 김태오</span>
+<span class="k">status</span>: <span class="v">이슈</span>
+<span class="k">progress</span>: <span class="v">65</span></div>
+    <div class="doc" style="margin-top:6px">
+      <h3>오늘 한 일</h3>
+      <ul><li>SeqAutoRunPTOP X=600 스톨 재현 테스트</li><li>MarkingStartX 값 매핑 검토</li></ul>
+      <h3>이슈 / 블로커</h3>
+      <ul><li>iMOTFComplete 리셋 미동작 추정 <span class="note">(필드 검증 대기)</span></li></ul>
+      <h3>내일 할 일</h3>
+      <ul><li>ScannerConfig 파라미터 연결 필드 확인</li></ul>
+    </div>
+    <p style="font-size:12.5px;color:var(--sub);margin-top:8px">상단 YAML 은 대시보드가 읽는 부분이라 키 이름·형식이 고정입니다. 본문은 오늘 한 일 / 이슈 / 내일 할 일 세 섹션으로 자동 분류됩니다.</p>`},
+
+  {no:"04",key:"s4",name:"저장 & 활용",use:"output 저장 → 대시보드 → 엑셀",
+   render:`
+    <div class="lbl">저장 경로 (자동)</div>
+    <p><span class="path">output/LGES_OC5_PtoP/2026-06-11.md</span></p>
+    <div class="lbl">쌓이면 이렇게 흘러갑니다</div>
+    <div class="flow">
+      <div class="box">일일 .md 누적</div><span class="arr">→</span>
+      <div class="box">대시보드 조회</div><span class="arr">→</span>
+      <div class="box">엑셀 내보내기</div>
+    </div>
+    <div class="lbl">엑셀 출력 형태 (한 행 = 하루)</div>
+    <table>
+      <tr><th>프로젝트</th><th>날짜</th><th>진행률</th><th>상태</th><th>오늘 한 일</th></tr>
+      <tr><td>LGES_OC5_PtoP</td><td>2026-06-11</td><td>65</td><td>이슈</td><td>X=600 스톨 재현 …</td></tr>
+    </table>
+    <p style="font-size:12.5px;color:var(--sub);margin-top:8px">대시보드에서 기간·프로젝트로 필터한 뒤 엑셀로 내보내면 전달용 파일이 만들어집니다.</p>`},
+];
+
+const stepList=document.getElementById('stepList');
+const panel=document.getElementById('panel');
+let active=0;
+
+function renderList(){
+  stepList.innerHTML=STEPS.map((t,i)=>`
+    <div class="step-card ${i===active?'active':''}" style="--c:var(--${t.key})" onclick="select(${i})">
+      <div class="sc-no">${t.no}</div>
+      <div><div class="sc-title">${t.name}</div><div class="sc-sub">${t.use}</div></div>
+    </div>`).join('');
+}
+function renderPanel(){
+  const t=STEPS[active];
+  panel.style.setProperty('--c',`var(--${t.key})`);
+  panel.innerHTML=`
+    <div class="panel-head" style="--c:var(--${t.key})">
+      <div class="ph-no">STEP ${t.no}</div>
+      <h2>${t.name}</h2>
+      <div class="when">${t.use}</div>
+    </div>
+    <div class="body" style="--c:var(--${t.key})">${t.render}</div>`;
+}
+function select(i){active=i;renderList();renderPanel();
+  if(window.innerWidth<=820)panel.scrollIntoView({behavior:'smooth'});}
+renderList();renderPanel();
+</script>
+</body>
+</html>

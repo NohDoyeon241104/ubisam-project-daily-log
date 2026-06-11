@@ -1,0 +1,34 @@
+{
+  "log_root": "./output",
+  "status_colors": {
+    "예정": "#EF9F27",
+    "진행중": "#639922",
+    "완료": "#888780"
+  },
+  "projects": [
+    {
+      "id": "LGES_OC5_PtoP",
+      "name": "LGES OC5 PtoP",
+      "start": "2026-03-01",
+      "end": "2026-09-30",
+      "status": "진행중",
+      "members": ["노도연", "김태오"]
+    },
+    {
+      "id": "SKON_P5_Vision",
+      "name": "SK온 P5 비전검사",
+      "start": "2026-07-01",
+      "end": "",
+      "status": "예정",
+      "members": ["노도연"]
+    },
+    {
+      "id": "SamsungSDI_Marking",
+      "name": "삼성SDI 마킹라인",
+      "start": "2025-11-01",
+      "end": "2026-02-28",
+      "status": "완료",
+      "members": ["노도연", "박과장"]
+    }
+  ]
+}
