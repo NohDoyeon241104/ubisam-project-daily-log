@@ -479,11 +479,13 @@ class App:
             return
         try:
             import pandas as pd
-        except ImportError:
+            import openpyxl  # 엔진 확인용 (미설치 시 여기서 잡힘)
+        except Exception as e:
             messagebox.showerror(
-                "라이브러리 없음",
-                "엑셀 내보내기에는 pandas, openpyxl 이 필요합니다.\n"
-                "py -m pip install pandas openpyxl")
+                "라이브러리 로드 실패",
+                "pandas/openpyxl 로드 중 오류가 발생했습니다.\n\n"
+                f"{type(e).__name__}: {e}\n\n"
+                "설치: py -m pip install pandas openpyxl")
             return
         path = filedialog.asksaveasfilename(
             defaultextension=".xlsx",
@@ -492,9 +494,10 @@ class App:
         if not path:
             return
         try:
-            pd.DataFrame(rows).to_excel(path, index=False, sheet_name="ProjectLogs")
+            pd.DataFrame(rows).to_excel(path, index=False, sheet_name="ProjectLogs",
+                                        engine="openpyxl")
         except Exception as e:
-            messagebox.showerror("내보내기 실패", str(e))
+            messagebox.showerror("내보내기 실패", f"{type(e).__name__}: {e}")
             return
         messagebox.showinfo("완료", f"엑셀 저장됨:\n{path}")
 
